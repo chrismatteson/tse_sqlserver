@@ -32,19 +32,20 @@ class tse_sqlserver (
     require => Staging::File[$filename],
   }
 
-  $extract = grep(["${installer}"], '.exe')
-  if empty($extract) {
-    $installsource = $source
-  }
-  else {
+#  $extract = grep(["${installer}"], '.exe')
+#  if empty($extract) {
+#    $installsource = $source
+#  }
+#  else {
     exec { 'extract':
       command => "${installer} /q",
       creates => chop(chop(chop(chop($installer)))),
       provider => powershell,
+      cwd      => "${::staging_windir}\\${module_name}",
       require => Staging::File[$filename],
     }
     $installsource = chop(chop(chop(chop($installer))))
-  }
+#  }
 
   class { 'tse_sqlserver::sql':
     source => $installsource,
@@ -56,4 +57,5 @@ class tse_sqlserver (
 
   contain tse_sqlserver::sql
   tse_sqlserver::attachdb { 'AdventureWorks2012': }
+  contain tse_sqlserver::attachdb
 }
