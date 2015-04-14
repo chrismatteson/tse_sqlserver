@@ -53,9 +53,12 @@ class tse_sqlserver (
     db_instance => $db_instance,
     sa_pass => $sa_pass,
     db_name => $dbname,
+    require => Exec['extract'],
   }
 
   contain tse_sqlserver::sql
-  tse_sqlserver::attachdb { 'AdventureWorks2012': }
-  contain tse_sqlserver::attachdb
+  tse_sqlserver::attachdb { 'AdventureWorks2012':
+    require => Class['tse_sqlserver::sql'],
+  }
+
 }
