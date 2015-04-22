@@ -22,7 +22,7 @@ class tse_sqlserver::sql (
   }
   sqlserver_instance{ $db_instance:
     ensure                => present,
-    features              => ['SQL'],
+    features              => ['SQLEngine','Replication'],
     source                => $source,
     security_mode         => 'SQL',
     sa_pwd                => $sa_pass,

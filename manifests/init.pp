@@ -9,7 +9,7 @@ class tse_sqlserver (
   $admin_user='vagrant',
   $db_instance='MYINSTANCE',
   $sa_pass='Azure$123',
-  $db_name='adventureworks'
+  $db_name='AdventureWorks2012'
 ) {
 
   $filename = staging_parse($source, 'filename')
@@ -52,12 +52,12 @@ class tse_sqlserver (
     admin_user => $admin_user,
     db_instance => $db_instance,
     sa_pass => $sa_pass,
-    db_name => $dbname,
+    db_name => $db_name,
     require => Exec['extract'],
   }
 
   contain tse_sqlserver::sql
-  tse_sqlserver::attachdb { 'AdventureWorks2012':
+  tse_sqlserver::attachdb { $db_name:
     require => Class['tse_sqlserver::sql'],
   }
 
