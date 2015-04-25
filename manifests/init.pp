@@ -2,7 +2,6 @@
 # instance of the attachDB defined type.
 class tse_sqlserver (
   $mount_iso=true,
-  $iso='SQLEXPRWT_x64_ENU.exe',
   $iso_drive='Q',
   $source='http://care.dlservice.microsoft.com/dl/download/E/A/E/EAE6F7FC-767A-4038-A954-49B8B05D04EB/ExpressAndTools%2064BIT/SQLEXPRWT_x64_ENU.exe',
   $stagingowner='BUILTIN\Administrators',
@@ -32,11 +31,20 @@ class tse_sqlserver (
     require => Staging::File[$filename],
   }
 
-#  $extract = grep(["${installer}"], '.exe')
-#  if empty($extract) {
-#    $installsource = $source
-#  }
-#  else {
+  $extract = grep(["${installer}"], '.exe')
+  $iso = grep(["${installer}"], '.iso')
+
+  if empty($iso) == false {
+    class { 'tse_sqlserver::mount':
+      iso => $filename,
+      iso_drive => $iso_drive,
+    }
+    $installsource = "${iso_drive}:\\"
+  }
+  elsif empty($extract) {
+    $installsource = $source
+  }
+  else {
     exec { 'extract':
       command => "${installer} /q",
       creates => chop(chop(chop(chop($installer)))),
@@ -45,7 +53,7 @@ class tse_sqlserver (
       require => Staging::File[$filename],
     }
     $installsource = chop(chop(chop(chop($installer))))
-#  }
+  }
 
   class { 'tse_sqlserver::sql':
     source => $installsource,
@@ -53,12 +61,11 @@ class tse_sqlserver (
     db_instance => $db_instance,
     sa_pass => $sa_pass,
     db_name => $db_name,
-    require => Exec['extract'],
+#    require => Exec['extract'],
   }
 
   contain tse_sqlserver::sql
   tse_sqlserver::attachdb { $db_name:
     require => Class['tse_sqlserver::sql'],
   }
-
 }
