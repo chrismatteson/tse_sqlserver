@@ -35,24 +35,20 @@ class tse_sqlserver (
   $iso = grep(["${installer}"], '.iso')
 
   if empty($iso) == false {
-    class { 'tse_sqlserver::mount':
-      iso => $filename,
-      iso_drive => $iso_drive,
-    }
     $installsource = "${iso_drive}:\\"
   }
   elsif empty($extract) {
     $installsource = $source
   }
   else {
-    exec { 'extract':
-      command => "${installer} /q",
-      creates => chop(chop(chop(chop($installer)))),
-      provider => powershell,
-      cwd      => "${::staging_windir}\\${module_name}",
-      require => Staging::File[$filename],
-    }
     $installsource = chop(chop(chop(chop($installer))))
+  }
+
+  class { 'tse_sqlserver::extract':
+    installer => $installer,
+    filename  => $filename,
+    iso_drive => $iso_drive,
+    require   => Acl["${::staging_windir}\\${module_name}"], 
   }
 
   class { 'tse_sqlserver::sql':
@@ -61,7 +57,7 @@ class tse_sqlserver (
     db_instance => $db_instance,
     sa_pass => $sa_pass,
     db_name => $db_name,
-#    require => Exec['extract'],
+    require => Class['extract'],
   }
 
   contain tse_sqlserver::sql
