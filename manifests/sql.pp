@@ -17,9 +17,8 @@ class tse_sqlserver::sql (
     before => Windowsfeature['Net-Framework-Core'],
   }
 
-  windowsfeature { 'Net-Framework-Core':
-    before => Sqlserver::Database[$db_name],
-  }
+  windowsfeature { 'Net-Framework-Core': }
+
   sqlserver_instance{ $db_instance:
     ensure                => present,
     features              => ['SQLEngine','Replication'],
@@ -35,10 +34,5 @@ class tse_sqlserver::sql (
   sqlserver::config{ $db_instance:
     admin_user => 'sa',
     admin_pass => $sa_pass,
-  }
-  sqlserver::database{ $db_name:
-    ensure   => present,
-    db_name  => $db_name,
-    instance => $db_instance,
   }
 }
