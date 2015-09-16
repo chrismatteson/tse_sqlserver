@@ -57,7 +57,7 @@ class tse_sqlserver (
     db_instance => $db_instance,
     sa_pass => $sa_pass,
     db_name => $db_name,
-    require => Class['extract'],
+    require => Class['tse_sqlserver::extract'],
   }
 
   contain tse_sqlserver::sql
