@@ -25,9 +25,9 @@ GO
 "@ 
     Invoke-Sqlcmd $attachSQLCMD -QueryTimeout 3600 -ServerInstance '<%= @hostname %>\<%= @db_instance %>'
 $changeowner = @"
-USE <%= title %> 
+USE <%= @title %> 
 GO
-ALTER AUTHORIZATION ON DATABASE::<%= title %> TO <%= @owner %>;
+ALTER AUTHORIZATION ON DATABASE::<%= @title %> TO <%= @owner %>;
 GO
 "@
     Invoke-Sqlcmd $changeowner -QueryTimeout 3600 -ServerInstance '<%= @hostname %>\<%= @db_instance %>'
